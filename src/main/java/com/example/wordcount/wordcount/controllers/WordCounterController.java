@@ -27,7 +27,7 @@ public class WordCounterController {
             ){
 
         System.out.println("wordList = " + wordList.getWordList());
-        wordList.getWordList().forEach(w -> this.wordCounter.add(w));
+        wordList.getWordList().forEach(w -> this.wordCounter.addWord(w));
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

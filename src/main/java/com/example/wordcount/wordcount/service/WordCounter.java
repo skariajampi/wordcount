@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @Service
@@ -18,12 +19,24 @@ public class WordCounter {
 
     Predicate<String> isAlphabetic = s -> s.matches("^[a-zA-Z]*$");
 
+    Consumer<String> addWordConsumer;
+
+
     @Autowired
     public WordCounter(Map<String, Integer> wordList,
                        Translator translator) {
 
         this.wordList = wordList;
         this.translator = translator;
+    }
+
+    public void addWord(String word) {
+        if(addWordConsumer != null) {
+            addWordConsumer.accept(word);
+        } else {
+            addWordConsumer = this::add;
+            addWordConsumer.accept(word);
+        }
     }
 
     public void add(String word) {
@@ -47,7 +60,7 @@ public class WordCounter {
 
     }
 
-    private void addToMap(String word) {
+    public void addToMap(String word) {
         if(this.wordList == null) {
             this.wordList = new ConcurrentHashMap<>();
         }
@@ -85,6 +98,15 @@ public class WordCounter {
 
     public void setTranslator(Translator translator) {
         this.translator = translator;
+    }
+
+
+    public Consumer<String> getAddWordConsumer() {
+        return addWordConsumer;
+    }
+
+    public void setAddWordConsumer(Consumer<String> addWordConsumer) {
+        this.addWordConsumer = addWordConsumer;
     }
 
 

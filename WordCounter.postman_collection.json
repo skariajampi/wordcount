@@ -1,0 +1,108 @@
+{
+	"info": {
+		"_postman_id": "86b271eb-d4ce-4280-bb4a-98003861d925",
+		"name": "WordCounter",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "add words",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"wordList\": [\n        \"bread\",\n        \"happy\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/wordcounter/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"wordcounter",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add words non alpha",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"wordList\": [\n        \"2121\",\n        \"happy\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/wordcounter/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"wordcounter",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get words Copy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/wordcounter/words",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"wordcounter",
+						"words"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get count",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/wordcounter/count/bread",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"wordcounter",
+						"count",
+						"bread"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

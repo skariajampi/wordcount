@@ -11,9 +11,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,6 +29,8 @@ class WordCounterTest {
 
     @Mock
     private Translator translator;
+
+    Predicate<String> isAlphabetic = s -> s.matches("^[a-zA-Z]*$");
 
     @BeforeEach
     void setup(){
@@ -52,9 +57,9 @@ class WordCounterTest {
 
     @Test
     void addMultipleWords() {
-        wordCounter.add("flower");
-        wordCounter.add("bread");
-        wordCounter.add("CAPITAL");
+        wordCounter.addWord("flower");
+        wordCounter.addWord("bread");
+        wordCounter.addWord("CAPITAL");
 
         assertEquals(3, wordCounter.getWordList().size());
     }
@@ -73,7 +78,7 @@ class WordCounterTest {
     @MethodSource("nonAlphaWordsSource")
     @ParameterizedTest
     void addWordsWithNonAlphaCharacters(String word) {
-        assertThrows(IllegalArgumentException.class, () -> wordCounter.add(word));
+        assertThrows(IllegalArgumentException.class, () -> wordCounter.addWord(word));
     }
 
 
@@ -81,7 +86,7 @@ class WordCounterTest {
     void count() {
 
         when(translator.translate("flower")).thenReturn("flower");
-        wordCounter.add("flower");
+        wordCounter.addWord("flower");
 
         long count = wordCounter.count("flower");
 
@@ -95,9 +100,9 @@ class WordCounterTest {
         when(translator.translate("flower")).thenReturn("flower");
         when(translator.translate("flor")).thenReturn("flower");
         when(translator.translate("blume")).thenReturn("flower");
-        wordCounter.add("flower");
-        wordCounter.add("flor");
-        wordCounter.add("blume");
+        wordCounter.addWord("flower");
+        wordCounter.addWord("flor");
+        wordCounter.addWord("blume");
 
         long count = wordCounter.count("flower");
 
@@ -122,11 +127,11 @@ class WordCounterTest {
         when(translator.translate("joe")).thenReturn("joe");
         for (int i = 0; i < numberOfThreads; i++) {
             service.submit(() -> {
-                wordCounter.add("flower");
-                wordCounter.add("flor");
-                wordCounter.add("blume");
-                wordCounter.add("blah");
-                wordCounter.add("joe");
+                wordCounter.addWord("flower");
+                wordCounter.addWord("flor");
+                wordCounter.addWord("blume");
+                wordCounter.addWord("blah");
+                wordCounter.addWord("joe");
                 latch.countDown();
             });
         }
@@ -135,4 +140,35 @@ class WordCounterTest {
         assertEquals(3, wordCounter.count("flower"));
     }
 
+    @Test
+    void addMultipleWords_On_The_fly_Algorithm() {
+        Consumer<String> addWordAlgorithm = this::addWordAlgorithm;
+        wordCounter.setAddWordConsumer(addWordAlgorithm);
+        wordCounter.addWord("1222");
+        wordCounter.addWord("3333");
+        wordCounter.addWord("@@@@@");
+
+        assertEquals(3, wordCounter.getWordList().size());
+    }
+
+    private void addWordAlgorithm(String word) {
+
+        Optional<String> wordOptional = Optional.ofNullable(word);
+        wordOptional.ifPresentOrElse(
+                s -> {
+                    if(isAlphabetic.negate().test(s)) {
+                        wordCounter.addToMap(word);
+                    } else {
+                        throw new IllegalArgumentException(
+                                "Sorry! Cannot add a word that contains alphabet characters!");
+                    }
+                },
+
+                () -> {
+                    throw new IllegalArgumentException(
+                            "Sorry! Cannot add a word that is either null or empty!");
+                }
+        );
+
+    }
 }
