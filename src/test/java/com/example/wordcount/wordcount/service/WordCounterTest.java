@@ -88,7 +88,7 @@ class WordCounterTest {
         when(translator.translate("flower")).thenReturn("flower");
         wordCounter.addWord("flower");
 
-        long count = wordCounter.count("flower");
+        long count = wordCounter.countWord("flower");
 
         assertEquals(1, count);
     }
@@ -104,7 +104,7 @@ class WordCounterTest {
         wordCounter.addWord("flor");
         wordCounter.addWord("blume");
 
-        long count = wordCounter.count("flower");
+        long count = wordCounter.countWord("flower");
 
         assertEquals(3, count);
 
@@ -137,7 +137,7 @@ class WordCounterTest {
         }
         latch.await();
 
-        assertEquals(3, wordCounter.count("flower"));
+        assertEquals(3, wordCounter.countWord("flower"));
     }
 
     @Test

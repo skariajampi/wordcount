@@ -47,7 +47,7 @@ public class WordCounterController {
     @GetMapping("/wordcounter/count/{word}")
     public Long getCount(@PathVariable String word){
 
-        return wordCounter.count(word);
+        return wordCounter.countWord(word);
     }
 
 }

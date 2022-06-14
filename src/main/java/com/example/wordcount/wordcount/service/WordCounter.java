@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 @Service
@@ -17,9 +18,11 @@ public class WordCounter {
 
     private Translator translator;
 
-    Predicate<String> isAlphabetic = s -> s.matches("^[a-zA-Z]*$");
+    private Predicate<String> isAlphabetic = s -> s.matches("^[a-zA-Z]*$");
 
-    Consumer<String> addWordConsumer;
+    private Consumer<String> addWordConsumer;
+
+    private Function<String, Long> countWordFunction;
 
 
     @Autowired
@@ -107,5 +110,10 @@ public class WordCounter {
         this.addWordConsumer = addWordConsumer;
     }
 
-
+    public Long countWord(String word) {
+        if(countWordFunction == null) {
+            countWordFunction = this::count;
+        }
+        return countWordFunction.apply(word);
+    }
 }
