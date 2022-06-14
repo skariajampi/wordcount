@@ -11,6 +11,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -104,6 +107,32 @@ class WordCounterTest {
         verify(translator).translate("flor");
         verify(translator).translate("blume");
 
+    }
+
+
+    @Test
+    public void testMultiThreading() throws InterruptedException {
+        int numberOfThreads = 5;
+        ExecutorService service = Executors.newFixedThreadPool(10);
+        CountDownLatch latch = new CountDownLatch(numberOfThreads);
+        when(translator.translate("flower")).thenReturn("flower");
+        when(translator.translate("flor")).thenReturn("flower");
+        when(translator.translate("blume")).thenReturn("flower");
+        when(translator.translate("blah")).thenReturn("blah");
+        when(translator.translate("joe")).thenReturn("joe");
+        for (int i = 0; i < numberOfThreads; i++) {
+            service.submit(() -> {
+                wordCounter.add("flower");
+                wordCounter.add("flor");
+                wordCounter.add("blume");
+                wordCounter.add("blah");
+                wordCounter.add("joe");
+                latch.countDown();
+            });
+        }
+        latch.await();
+
+        assertEquals(3, wordCounter.count("flower"));
     }
 
 }
