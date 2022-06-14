@@ -31,12 +31,10 @@ public class WordCounter {
     }
 
     public void addWord(String word) {
-        if(addWordConsumer != null) {
-            addWordConsumer.accept(word);
-        } else {
+        if(addWordConsumer == null) {
             addWordConsumer = this::add;
-            addWordConsumer.accept(word);
         }
+        addWordConsumer.accept(word);
     }
 
     public void add(String word) {
