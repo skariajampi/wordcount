@@ -16,6 +16,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -169,6 +170,30 @@ class WordCounterTest {
                             "Sorry! Cannot add a word that is either null or empty!");
                 }
         );
+
+    }
+
+
+    @Test
+    void count_On_The_Fly_Algorithm() {
+
+        Function<String, Long> countWordAlgorithm = this::countWordAlgorithm;
+        wordCounter.setCountWordFunction(countWordAlgorithm);
+        when(translator.translate("flower")).thenReturn("flower");
+        wordCounter.addWord("flower");
+
+        long count = wordCounter.countWord("flower");
+
+        //just to show a different algorithm is in action
+        assertEquals(1001, count);
+    }
+
+    private Long countWordAlgorithm(String word) {
+
+        return wordCounter.getWordList() != null ? wordCounter.getWordList().keySet().stream()
+                .filter(key -> translator.translate(key).equalsIgnoreCase(
+                        translator.translate(word)))
+                .count() + 1000 : 0;//just to show a different algorithm is in action
 
     }
 }

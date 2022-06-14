@@ -116,4 +116,13 @@ public class WordCounter {
         }
         return countWordFunction.apply(word);
     }
+
+    public Function<String, Long> getCountWordFunction() {
+        return countWordFunction;
+    }
+
+    public void setCountWordFunction(Function<String, Long> countWordFunction) {
+        this.countWordFunction = countWordFunction;
+    }
+
 }
