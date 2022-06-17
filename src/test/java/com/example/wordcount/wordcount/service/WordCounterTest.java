@@ -118,7 +118,7 @@ class WordCounterTest {
 
     @Test
     public void testMultiThreading() throws InterruptedException {
-        int numberOfThreads = 5;
+        int numberOfThreads = 2;
         ExecutorService service = Executors.newFixedThreadPool(10);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
         when(translator.translate("flower")).thenReturn("flower");
@@ -138,7 +138,7 @@ class WordCounterTest {
         }
         latch.await();
 
-        assertEquals(3, wordCounter.countWord("flower"));
+        assertEquals(6, wordCounter.countWord("flower"));
     }
 
     @Test

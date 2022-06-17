@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 public class WordCounter {
@@ -67,8 +68,8 @@ public class WordCounter {
         }
 
         if(this.wordList.containsKey(word)) {
-            int wordCounter = this.wordList.get(word) + 1;
-            this.wordList.put(word, wordCounter);
+
+            this.wordList.computeIfPresent(word, (k,v)-> v+1);
 
         } else {
 
@@ -79,10 +80,16 @@ public class WordCounter {
 
     public long count(String word){
 
-        return this.wordList != null ? this.wordList.keySet().stream()
-                .filter(key -> translator.translate(key).equalsIgnoreCase(
-                        translator.translate(word)))
-                .count() : 0;
+        if(this.wordList != null && word != null) {
+            return this.wordList.entrySet().stream()
+                    .filter(entry -> translator.translate(entry.getKey()).equalsIgnoreCase(
+                            translator.translate(word)))
+                    .mapToInt(entry -> entry.getValue())
+                    .sum();
+
+        } else {
+            return 0;
+        }
     }
 
     public Map<String, Integer> getWordList() {
